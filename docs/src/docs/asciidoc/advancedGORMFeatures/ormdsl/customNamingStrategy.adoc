@@ -60,3 +60,22 @@ class CustomNamingStrategy extends ImprovedNamingStrategy {
 }
 ----
 
+If you need to change foreign key suffix that is added to associations, by default it `_id`, create custom naming strategy and implement `org.grails.orm.hibernate.cfg.ExtendedNamingStrategy`,
+which adds `getForeignKeySuffix()` method and its value will be used as suffix.
+
+[source,java]
+----
+package com.myco.myproj
+
+import org.hibernate.cfg.ImprovedNamingStrategy
+import org.hibernate.util.StringHelper
+import org.grails.orm.hibernate.cfg.ExtendedNamingStrategy
+
+class CustomNamingStrategy extends ImprovedNamingStrategy implements ExtendedNamingStrategy{
+
+    String getForeignKeySuffix(){
+        "Id"
+    }
+
+}
+----

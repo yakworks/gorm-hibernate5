@@ -55,6 +55,7 @@ import org.hibernate.persister.entity.UnionSubclassEntityPersister;
 import org.hibernate.type.*;
 import org.hibernate.usertype.UserCollectionType;
 import org.jboss.jandex.IndexView;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Entity;
@@ -125,6 +126,7 @@ public class GrailsDomainBinder implements MetadataContributor {
         for (PersistentEntity persistentEntity : hibernateMappingContext.getPersistentEntities()) {
             evaluateMapping(persistentEntity);
         }
+        FOREIGN_KEY_SUFFIX = getForeignKeySuffix(sessionFactoryName);
     }
 
     /**
@@ -3158,6 +3160,14 @@ public class GrailsDomainBinder implements MetadataContributor {
 
         NamingStrategy namingStrategy = getNamingStrategy(sessionFactoryBeanName);
         return namingStrategy.propertyToColumnName(property.getName()) + UNDERSCORE + IndexedCollection.DEFAULT_ELEMENT_COLUMN_NAME;
+    }
+
+    protected String getForeignKeySuffix(String sessionFactoryBeanName){
+        String foreignKeySuffix = FOREIGN_KEY_SUFFIX;
+        if (getNamingStrategy(sessionFactoryBeanName) instanceof ExtendedNamingStrategy) {
+            foreignKeySuffix = ((ExtendedNamingStrategy)getNamingStrategy(sessionFactoryBeanName)).getForeignKeySuffix();
+        }
+        return foreignKeySuffix;
     }
 
     protected boolean hasJoinTableColumnNameMapping(PropertyConfig pc) {
